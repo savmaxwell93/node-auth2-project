@@ -1,4 +1,5 @@
 const { JWT_SECRET } = require("../secrets"); // use this secret!
+const User = require('../users/users-model');
 
 const restricted = (req, res, next) => {
   /*
@@ -42,7 +43,15 @@ const checkUsernameExists = (req, res, next) => {
       "message": "Invalid credentials"
     }
   */
- next()
+ User.findBy(req.body.username)
+    .then(username => {
+      if (!username) {
+        next({ status: 401, message: 'Invalid credentials'})
+      } else {
+        next()
+      }
+    })
+    .catch(next)
 }
 
 
